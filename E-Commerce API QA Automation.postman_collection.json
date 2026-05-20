@@ -1,0 +1,934 @@
+{
+	"info": {
+		"_postman_id": "d43dd91b-6b8a-4e94-90ed-67e8e0f7f801",
+		"name": "E-Commerce API QA Automation",
+		"description": "EPIC: E-Commerce Product Management API\n\nGoal:  \nValidate e-commerce product management API functionality through manual and automated API testing.\n\nScope:\n\n- create product\n    \n- get product\n    \n- update product\n    \n- delete product\n    \n- negative scenarios\n    \n- response validation\n    \n- business flow validation\n    \n\nExecution:\n\n- Postman\n    \n- Newman\n    \n- GitHub Actions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49475064",
+		"_collection_link": "https://radovanovicsasha-rs-449960.postman.co/workspace/Aleksandar-Radovanovi%C4%87's-Worksp~fd6fa2c0-cc85-4944-8bbc-c0296a649e4a/collection/49475064-d43dd91b-6b8a-4e94-90ed-67e8e0f7f801?action=share&source=collection_link&creator=49475064"
+	},
+	"item": [
+		{
+			"name": "01 - Product CRUD",
+			"item": [
+				{
+					"name": "Create Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 201 Created\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    // očekujemo HTTP status 201\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// Čuvamo productId iz response-a u environment varijablu\r",
+									"// koristićemo ga kasnije za GET / PUT / DELETE requestove\r",
+									"pm.environment.set(\"productId\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"QA Test Product\",\r\n  \"price\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"add"
+							]
+						},
+						"description": "Test Case:  \nVerify that API successfully creates a new product.\n\nExpected Result:\n\n- Status code should be 201 Created\n    \n- Response should contain generated product ID\n    \n- Response should contain correct product title\n    \n- Response should contain correct product price"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da title postoji\r",
+									"pm.test(\"Product title exists\", function () {\r",
+									"    // proveravamo da title nije prazan\r",
+									"    pm.expect(jsonData.title).to.not.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"1"
+							]
+						},
+						"description": "Test Case:  \nVerify that API returns product details for a valid product ID.\n\nExpected Result:\n\n- Status code should be 200 OK\n    \n- Response should contain correct product ID\n    \n- Response should contain product title\n    \n- Response should contain product price"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da je title uspešno izmenjen\r",
+									"pm.test(\"Product title is updated\", function () {\r",
+									"\r",
+									"    // proveravamo novi title\r",
+									"    pm.expect(jsonData.title)\r",
+									"        .to.eql(\"Updated QA Product\");\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da je price uspešno izmenjen\r",
+									"pm.test(\"Product price is updated\", function () {\r",
+									"    // proveravamo novu cenu\r",
+									"    pm.expect(jsonData.price)\r",
+									"        .to.eql(150);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Updated QA Product\",\r\n  \"price\": 150\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"1"
+							]
+						},
+						"description": "Test Case:  \nVerify that API successfully updates existing product information.\n\nExpected Result:\n\n- Status code should be 200 OK\n    \n- Response should contain updated product title\n    \n- Response should contain updated product price\n    \n- Response should contain correct product ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da je proizvod označen kao obrisan\r",
+									"pm.test(\"Product is marked as deleted\", function () {\r",
+									"    // proveravamo da deleted ima vrednost true\r",
+									"        pm.expect(jsonData.isDeleted)\r",
+									"        .to.eql(true);\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da API vraća ispravan product id\r",
+									"pm.test(\"Deleted product id is correct\", function () {\r",
+									"    // proveravamo da je obrisan proizvod sa id 1\r",
+									"    pm.expect(jsonData.id)\r",
+									"        .to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"1"
+							]
+						},
+						"description": "Test Case:  \nVerify that API successfully deletes an existing product.\n\nExpected Result:\n\n- Status code should be 200 OK\n    \n- Response should indicate product is deleted\n    \n- Response should contain correct deleted product ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da products array postoji\r",
+									"pm.test(\"Products array exists\", function () {\r",
+									"    // proveravamo da products postoji\r",
+									"    pm.expect(jsonData.products)\r",
+									"        .to.exist;\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da products nije prazan\r",
+									"pm.test(\"Products array is not empty\", function () {\r",
+									"    // proveravamo da array nije prazan\r",
+									"    pm.expect(jsonData.products.length)\r",
+									"        .to.be.above(0);\r",
+									"});\r",
+									"\r",
+									"// TEST: provera pagination limit vrednosti\r",
+									"pm.test(\"Pagination limit is correct\", function () {\r",
+									"    // proveravamo expected limit\r",
+									"    pm.expect(jsonData.limit)\r",
+									"        .to.eql(30);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						},
+						"description": "Test Case:  \nVerify that API successfully returns list of all products.\n\nExpected Result:\n\n- Status code should be 200 OK\n    \n- Response should contain products array\n    \n- Products array should not be empty\n    \n- Response should contain pagination information"
+					},
+					"response": []
+				}
+			],
+			"description": "Purpose:  \nValidate core product CRUD operations for e-commerce product management API.\n\nCoverage:\n\n- create product\n- get product by ID\n- update product\n- delete product\n- get all products\n- response status validation\n- response body validation\n- basic business validation\n    \n\nExpected Outcome:  \nAPI should correctly handle product create, read, update, delete, and list operations."
+		},
+		{
+			"name": "02 - Flow - Full Product Lifecycle",
+			"item": [
+				{
+					"name": "1. Flow - Create Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// TEST: provera da API vraća status 201 Created\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    // očekujemo HTTP status 201\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da generated product id postoji\r",
+									"pm.test(\"Generated product id exists\", function () {\r",
+									"    // proveravamo da id postoji\r",
+									"    pm.expect(jsonData.id)\r",
+									"        .to.exist;\r",
+									"});\r",
+									"\r",
+									"// ČUVAMO productId u environment variable\r",
+									"pm.environment.set(\"flowProductId\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Flow - Get Created Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// TEST: provera da product ID postoji\r",
+									"pm.test(\"Product id exists\", function () {\r",
+									"    // proveravamo da id postoji\r",
+									"    pm.expect(jsonData.id)\r",
+									"        .to.exist;\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da product title postoji\r",
+									"pm.test(\"Product title exists\", function () {\r",
+									"    // proveravamo da title nije prazan\r",
+									"    pm.expect(jsonData.title)\r",
+									"        .to.not.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Flow - Update Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// TEST: provera da je title uspešno izmenjen\r",
+									"pm.test(\"Product title updated\", function () {\r",
+									"    // proveravamo updated title\r",
+									"    pm.expect(jsonData.title)\r",
+									"        .to.eql(\"Flow Updated Product\");\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da je price uspešno izmenjen\r",
+									"pm.test(\"Product price updated\", function () {\r",
+									"    // proveravamo updated price\r",
+									"    pm.expect(jsonData.price)\r",
+									"        .to.eql(777);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Flow Updated Product\",\r\n  \"price\": 777\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Flow - Delete Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// TEST: provera da API vraća ispravan product id\r",
+									"pm.test(\"Deleted product id is correct\", function () {\r",
+									"    // proveravamo deleted product id\r",
+									"    pm.expect(jsonData.id)\r",
+									"        .to.eql(1);\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Purpose:  \nValidate complete product lifecycle flow using chained API requests and shared variables.\n\nCoverage:\n\n- create product flow\n    \n- save dynamic product ID\n    \n- request chaining\n    \n- update verification\n    \n- delete verification\n    \n- end-to-end flow validation\n    \n- environment variable sharing\n    \n\nFlow Steps:\n\n1. Create product and save generated product ID\n    \n2. Retrieve created product using saved ID\n    \n3. Update product using shared product ID\n    \n4. Delete product using shared product ID\n    \n\nExpected Outcome:  \nAPI flow should support consistent product lifecycle operations across multiple chained requests."
+		},
+		{
+			"name": "03 - Negative Tests",
+			"item": [
+				{
+					"name": "Invalid Product ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 404 Not Found\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    // očekujemo HTTP status 404\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da response sadrži error poruku\r",
+									"pm.test(\"Error message exists\", function () {\r",
+									"    // proveravamo da message postoji\r",
+									"    pm.expect(jsonData.message)\r",
+									"        .to.exist;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/999999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"999999"
+							]
+						},
+						"description": "Test Case:  \nVerify that API returns error response for non-existing product ID.\n\nExpected Result:\n\n- Status code should be 404 Not Found\n    \n- Response should contain error message\n    \n- Error message should indicate product was not found"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Non Existing Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 404 Not Found\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    // očekujemo HTTP status 404\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da error message postoji\r",
+									"pm.test(\"Error message exists\", function () {\r",
+									"    // proveravamo da message postoji\r",
+									"    pm.expect(jsonData.message)\r",
+									"        .to.exist;\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da response sadrži tekst \"not found\"\r",
+									"pm.test(\"Error message contains not found\", function () {\r",
+									"    // proveravamo sadržaj error poruke\r",
+									"    pm.expect(jsonData.message)\r",
+									"        .to.include(\"not found\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Invalid Update Product\",\r\n  \"price\": 999\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/999999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"999999"
+							]
+						},
+						"description": "Test Case:  \nVerify that API returns error response when updating non-existing product.\n\nExpected Result:\n\n- Status code should be 404 Not Found\n    \n- Response should contain error message\n    \n- Error message should indicate product was not found"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Invalid Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 404 Not Found\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    // očekujemo HTTP status 404\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da error message postoji\r",
+									"pm.test(\"Error message exists\", function () {\r",
+									"    // proveravamo da message postoji\r",
+									"    pm.expect(jsonData.message)\r",
+									"        .to.exist;\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da response sadrži tekst \"not found\"\r",
+									"pm.test(\"Error message contains not found\", function () {\r",
+									"    // proveravamo sadržaj error poruke\r",
+									"    pm.expect(jsonData.message)\r",
+									"        .to.include(\"not found\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/999999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"999999"
+							]
+						},
+						"description": "Test Case:  \nVerify that API returns error response when deleting non-existing product.\n\nExpected Result:\n\n- Status code should be 404 Not Found\n    \n- Response should contain error message\n    \n- Error message should indicate product was not found"
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Product Body",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 201 Created\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    // očekujemo HTTP status 201\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da response sadrži generated id\r",
+									"pm.test(\"Generated product id exists\", function () {\r",
+									"    // proveravamo da id postoji\r",
+									"    pm.expect(jsonData.id)\r",
+									"        .to.exist;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"add"
+							]
+						},
+						"description": "Test Case:  \nVerify API behavior when invalid product payload is submitted.\n\nExpected Result:\n\n- API should respond consistently for invalid payload\n    \n- Response should contain generated product ID or validation error\n    \n- API behavior should be documented and validated"
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Endpoint",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 404 Not Found\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    // očekujemo HTTP status 404\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da response sadrži HTML sadržaj\r",
+									"pm.test(\"Response contains HTML page\", function () {\r",
+									"    // proveravamo da response sadrži HTML tag\r",
+									"    pm.expect(pm.response.text())\r",
+									"        .to.include(\"<html\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/invalidendpoint",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"invalidendpoint"
+							]
+						},
+						"description": "Test Case:  \nVerify that API returns proper error response for invalid endpoint request.\n\nExpected Result:\n\n- Status code should be 404 Not Found\n    \n- Response should contain error page or error message\n    \n- Invalid endpoint should not return successful response"
+					},
+					"response": []
+				}
+			],
+			"description": "Purpose:  \nValidate API behavior for invalid, unexpected, and error scenarios.\n\nCoverage:\n\n- invalid product ID\n- invalid update requests\n- invalid delete requests\n- invalid request payloads\n- invalid endpoints\n- error response validation\n- error message validation\n    \n\nExpected Outcome:  \nAPI should correctly handle invalid requests and return appropriate error responses."
+		},
+		{
+			"name": "04 - Utilities",
+			"item": [
+				{
+					"name": "API Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// TEST: provera response vremena\r",
+									"pm.test(\"Response time is below 1000ms\", function () {\r",
+									"    // proveravamo da response nije spor\r",
+									"    pm.expect(pm.response.responseTime)\r",
+									"        .to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						},
+						"description": "Test Case:  \nVerify that API service is available and responding correctly.\n\nExpected Result:\n\n- Status code should be 200 OK\n    \n- API should respond within acceptable response time\n    \n- Response should contain valid data"
+					},
+					"response": []
+				},
+				{
+					"name": "Product Search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da products array postoji\r",
+									"pm.test(\"Products array exists\", function () {\r",
+									"    // proveravamo da products postoji\r",
+									"    pm.expect(jsonData.products)\r",
+									"        .to.exist;\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da search rezultat nije prazan\r",
+									"pm.test(\"Search results are not empty\", function () {\r",
+									"    // proveravamo da postoji makar jedan rezultat\r",
+									"    pm.expect(jsonData.products.length)\r",
+									"        .to.be.above(0);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// TEST: provera da response sadrži pagination podatke\r",
+									"pm.test(\"Pagination data exists\", function () {\r",
+									"\r",
+									"    // proveravamo total i limit vrednosti\r",
+									"    pm.expect(jsonData.total)\r",
+									"        .to.exist;\r",
+									"\r",
+									"    pm.expect(jsonData.limit)\r",
+									"        .to.exist;\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/search?q=phone",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "phone"
+								}
+							]
+						},
+						"description": "Test Case:  \nVerify that API successfully returns products matching search criteria.\n\nExpected Result:\n\n- Status code should be 200 OK\n    \n- Response should contain matching products\n    \n- Products array should not be empty for valid search\n    \n- Returned products should match search query"
+					},
+					"response": []
+				},
+				{
+					"name": "Products Pagination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TEST: provera da API vraća status 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    // očekujemo HTTP status 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// RESPONSE pretvaramo u JSON objekat\r",
+									"let jsonData = pm.response.json();\r",
+									"// TEST: provera da products array postoji\r",
+									"pm.test(\"Products array exists\", function () {\r",
+									"    // proveravamo da products postoji\r",
+									"    pm.expect(jsonData.products)\r",
+									"        .to.exist;\r",
+									"});\r",
+									"\r",
+									"// TEST: provera da API vraća tačno 10 proizvoda\r",
+									"pm.test(\"Pagination returns 10 products\", function () {\r",
+									"    // proveravamo broj proizvoda\r",
+									"    pm.expect(jsonData.products.length)\r",
+									"        .to.eql(10);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// TEST: provera da je skip vrednost ispravna\r",
+									"pm.test(\"Skip value is correct\", function () {\r",
+									"\r",
+									"    // proveravamo skip parameter\r",
+									"    pm.expect(jsonData.skip)\r",
+									"        .to.eql(10);\r",
+									"\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// TEST: provera da je limit vrednost ispravna\r",
+									"pm.test(\"Limit value is correct\", function () {\r",
+									"\r",
+									"    // proveravamo limit parameter\r",
+									"    pm.expect(jsonData.limit)\r",
+									"        .to.eql(10);\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?limit=10&skip=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "skip",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Test Case:  \nVerify that API pagination functionality works correctly.\n\nExpected Result:\n\n- Status code should be 200 OK\n    \n- Response should contain products array\n    \n- Response should contain pagination values\n    \n- Returned product count should match limit parameter"
+					},
+					"response": []
+				}
+			],
+			"description": "Purpose:  \nProvide helper and utility requests used for API exploration, health checks, search, and pagination testing.\n\nCoverage:\n\n- API availability checks\n    \n- product search\n    \n- pagination validation\n    \n- helper requests\n    \n- exploratory API testing\n    \n\nExpected Outcome:  \nUtility endpoints should respond correctly and support auxiliary API validation activities."
+		}
+	]
+}
