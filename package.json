@@ -1,0 +1,20 @@
+{
+  "name": "ecommerce-api-qa-automation",
+  "version": "1.0.0",
+  "description": "Postman/Newman API test automation suite for an e-commerce product management API.",
+  "private": true,
+  "scripts": {
+    "test": "newman run \"E-Commerce API QA Automation.postman_collection.json\" -e \"E-Commerce QA Environment.postman_environment.json\"",
+    "test:report": "newman run \"E-Commerce API QA Automation.postman_collection.json\" -e \"E-Commerce QA Environment.postman_environment.json\" -r cli,htmlextra --reporter-htmlextra-export reports/report.html"
+  },
+  "devDependencies": {
+    "newman": "^6.2.2",
+    "newman-reporter-htmlextra": "^1.23.1"
+  },
+  "license": "MIT",
+  "author": "Aleksandar Radovanović",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RadovanovicSasha/ecommerce-api-qa-automation.git"
+  }
+}

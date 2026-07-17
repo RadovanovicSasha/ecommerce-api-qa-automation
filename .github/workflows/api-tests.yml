@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   run-api-tests:
@@ -18,11 +22,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      - name: Install Newman
-        run: npm install -g newman
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Run Postman Collection
-        run: |
-          newman run "E-Commerce API QA Automation.postman_collection.json" \
-          -e "E-Commerce QA Environment.postman_environment.json"
+      - name: Run Postman collection
+        run: npm run test:report
+
+      - name: Upload Newman HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: reports/report.html
+          retention-days: 14
